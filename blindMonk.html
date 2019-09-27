@@ -14,16 +14,32 @@
 
 <script type="text/javascript">
 
-   var config = {
+var config = {
     type: Phaser.WEBGL,
     parent: 'phaser-example',
+    width : 850,
+    height : 600,
+    backgroundColor : '2f2f2f',
     scene: {
         preload: preload,
-        create: create
+        create: create,
+        update: update
     }
 };
-
+//variable definitions
 var game = new Phaser.Game(config);
+let xp = 0;
+let graphics;
+var text;
+var hsv;
+var level = 1;
+let damage = 20/level;//to simulate the steepness of level advancement
+
+//end of variable definitions
+
+
+
+//main code
 
 function preload ()
 {
@@ -32,13 +48,21 @@ function preload ()
 
 function create ()
 {
+
+	var output = [];
     var sprite = this.add.sprite(400, 300, 'button').setInteractive();
 
-    sprite.on('pointerdown', function (pointer) {
+    text = this.add.text(32, 32);//allows adding text, starting from (x, y)
+    graphics = this.add.graphics({ x: 240, y: 36 });//allows usage of graphics, starting in the positions assigned
+    hsv = Phaser.Display.Color.HSVColorWheel();//method of color choosing
 
-        this.setTint(0xff0000);
+    
 
-    });
+	sprite.on('pointerdown', function (pointer) {
+  		this.setTint(0xff0000);
+  		
+  		attack(damage)
+	});
 
     sprite.on('pointerout', function (pointer) {
 
@@ -53,6 +77,32 @@ function create ()
     });
 }
 
+function update () {
+    var output = [];
+
+    graphics.clear();
+
+    output.push('Level: ' + level);//prints out text
+    output.push('Experience: ');
+
+    graphics.fillStyle(hsv[50].color, 1);//defines bar color
+    graphics.fillRect(-100, 17, 1 * xp, 11);//defines x offset, y offset, current length and bar thickness(see line 56)
+    if (xp == 500){//sets xp limit based only in bar width before clearing
+    	graphics.clear();
+    	xp=0;
+    	level++;
+    }
+    
+
+    text.setText(output);
+}
+
+//end of main code
+//minor function declarations
+
+function attack(damage) {
+  	xp += damage;
+}
 
 
 </script>
