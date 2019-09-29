@@ -1,6 +1,6 @@
-<!doctype html> 
-<html lang="en"> 
-<head> 
+<!doctype html>
+<html lang="en">
+<head>
     <meta charset="UTF-8" />
     <title>Starting Point</title>
     <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
@@ -17,9 +17,9 @@
 var config = {
     type: Phaser.WEBGL,
     parent: 'phaser-example',
-    width : 850,
-    height : 600,
-    backgroundColor : '2f2f2f',
+    width : 375,
+    height : 667,
+    backgroundColor : 'fff',
     scene: {
         preload: preload,
         create: create,
@@ -29,7 +29,7 @@ var config = {
 //variable definitions
 var game = new Phaser.Game(config);
 let xp = 0;
-let graphics;
+let bar;
 var text;
 var hsv;
 var level = 1;
@@ -43,56 +43,56 @@ let damage = 20/level;//to simulate the steepness of level advancement
 
 function preload ()
 {
-    this.load.image('button', 'assets/button.png');
+    this.load.image('background', 'assets/background.png');
+    this.load.spritesheet('button', 'assets/button_spritesheet.png', { frameWidth: 232, frameHeight: 228 });
 }
-
 function create ()
 {
 
 	var output = [];
-    var sprite = this.add.sprite(400, 300, 'button').setInteractive();
+  var background = this.add.sprite(0, 0, 'background').setOrigin(0) ;
+  var button = this.add.sprite(185, 552, 'button').setOrigin(0.5).setInteractive();
 
-    text = this.add.text(32, 32);//allows adding text, starting from (x, y)
-    graphics = this.add.graphics({ x: 240, y: 36 });//allows usage of graphics, starting in the positions assigned
-    hsv = Phaser.Display.Color.HSVColorWheel();//method of color choosing
+  text = this.add.text(32, 32);//allows adding text, starting from (x, y)
+  bar = this.add.graphics({ x: 240, y: 36 });//allows usage of graphics, starting in the positions assigned
+  hsv = Phaser.Display.Color.HSVColorWheel();//method of color choosing
 
-    
 
-	sprite.on('pointerdown', function (pointer) {
+
+	button.on('pointerdown', function (pointer) {
   		this.setTint(0xff0000);
-  		
   		attack(damage)
 	});
 
-    sprite.on('pointerout', function (pointer) {
+  button.on('pointerout', function (pointer) {
 
-        this.clearTint();
+      this.clearTint();
 
-    });
+  });
 
-    sprite.on('pointerup', function (pointer) {
+  button.on('pointerup', function (pointer) {
 
-        this.clearTint();
+      this.clearTint();
 
-    });
+  });
 }
 
 function update () {
     var output = [];
 
-    graphics.clear();
+    bar.clear();
 
     output.push('Level: ' + level);//prints out text
     output.push('Experience: ');
 
-    graphics.fillStyle(hsv[50].color, 1);//defines bar color
-    graphics.fillRect(-100, 17, 1 * xp, 11);//defines x offset, y offset, current length and bar thickness(see line 56)
-    if (xp == 500){//sets xp limit based only in bar width before clearing
-    	graphics.clear();
+    bar.fillStyle(hsv[0].color, 1);//defines bar color
+    bar.fillRect(-100, 17, 1 * xp, 11);//defines x offset, y offset, current length and bar thickness(see line 56)
+    if (xp >= 150){//sets xp limit based only in bar width before clearing
+    	bar.clear();
     	xp=0;
     	level++;
     }
-    
+
 
     text.setText(output);
 }
