@@ -31,13 +31,38 @@ var config = {
     }
 };
 //variable definitions
+let player = {
+	currentExp : 0,
+	level : 1,
+	damage : 100,
+}
+
+let enemy = {
+	health : 318,
+	expValue : 70,
+	damageReduction : 1,
+}
+let sixthEnemy = {
+	health : 318,
+	expValue : 150,
+	damageReduction : 2,
+}
+
 var game = new Phaser.Game(config);
-let xp = 0;
-let bar;
-var text;
-var hsv;
-var level = 1;
-let damage = 20/level;//to simulate the steepness of level advancement
+let expBar;
+var text;//used to hold level text
+var damageText;//used to hold damage text
+let requiredExp = 150;
+let healthOutline;
+let count =0;
+let enemiesDefeated=0;//holds the number of enemies defeated
+let enemyHealthBar;
+var defeatedText;
+var timerEvents = [];
+var enemyTimerBar;
+var enemyTimer =159;
+
+
 
 //end of variable definitions
 
@@ -50,63 +75,149 @@ function preload ()
     this.load.image('background', 'assets/background.png');
     this.load.spritesheet('button', 'assets/button_spritesheet.png', { frameWidth: 232, frameHeight: 228 });
 }
-function create ()
-{
+function create (){
 
-	var output = [];
-  var background = this.add.sprite(0, 0, 'background').setOrigin(0) ;
-  var button = this.add.sprite(185, 552, 'button').setOrigin(0.5).setInteractive();
+	var defeated = [];//string to display number of enemies defeated
+	var levelOutput = [];//used to print level on top left of the screen on update function
+  	var background = this.add.sprite(0, 0, 'background').setOrigin(0) ;
+  	var button = this.add.sprite(185, 552, 'button').setOrigin(0.5).setInteractive();
 
-  text = this.add.text(32, 32);//allows adding text, starting from (x, y)
-  bar = this.add.graphics({ x: 240, y: 36 });//allows usage of graphics, starting in the positions assigned
-  hsv = Phaser.Display.Color.HSVColorWheel();//method of color choosing
+  	timerEvents.push(this.time.addEvent({ delay: 7000, loop: false }));
+
+  	defeatedText = this.add.text();//variable used to hold the function that displays text
+  	damageText = this.add.text();
+  	text = this.add.text();//allows adding text
+  	expBar = this.add.graphics();//allows usage of graphics
+  	enemyTimerBar = this.add.graphics();
+
+  	healthOutline = this.add.graphics();
+
+  	enemyHealthBar = this.add.graphics();
+  	
+  	
 
 
 
 	button.on('pointerdown', function (pointer) {
   		this.setTint(0xff0000);
-  		attack(damage)
+  		if(count<5){
+  			attack(enemy);
+  		}else attack(sixthEnemy);
+  		displayDamage();
+  		
+  		
+  		
 	});
 
-  button.on('pointerout', function (pointer) {
+  	button.on('pointerout', function (pointer) {
 
-      this.clearTint();
+      	this.clearTint();
 
-  });
+  	});
 
-  button.on('pointerup', function (pointer) {
+  	button.on('pointerup', function (pointer) {
 
-      this.clearTint();
+    	this.clearTint();
 
-  });
+	});
 }
 
 function update () {
-    var output = [];
 
-    bar.clear();
+	
+    var levelOutput = [];
+    var defeated = [];
 
-    output.push('Level: ' + level);//prints out text
-    output.push('Experience: ');
 
-    bar.fillStyle(hsv[0].color, 1);//defines bar color
-    bar.fillRect(-100, 17, 1 * xp, 11);//defines x offset, y offset, current length and bar thickness(see line 56)
-    if (xp >= 150){//sets xp limit based only in bar width before clearing
-    	bar.clear();
-    	xp=0;
-    	level++;
+    levelOutput.push(player.level);//prints out text
+    defeated.push("Enemies defeated:" + enemiesDefeated)
+    
+    expBar.clear();
+    expBar.fillStyle(0xffff00, 1);
+    expBar.fillRoundedRect(139, 49, 1*player.currentExp, 28, 3);//defines x offset, y offset, current length, bar thickness and corner roundness
+
+	healthOutline.clear();
+    healthOutline.fillStyle(0xffffff, 1);
+    healthOutline.fillRoundedRect(26, 130, 322, 32, 3);
+
+    enemyHealthBar.clear();
+    enemyHealthBar.fillStyle(0xff0000, 1);
+
+    if(count<5){
+		enemyHealthBar.fillRoundedRect(28, 132, enemy.health, 28, 3);
+  		timerEvents[0].reset({ delay: 7000, loop: false });
+  	}else {	
+
+		enemyHealthBar.fillRoundedRect(28, 132, sixthEnemy.health, 28, 3);//decision on which enemy to use based on count
+		enemyTimerBar.clear();
+		enemyTimerBar.fillStyle(0xff00ff)
+		enemyTimerBar.fillRoundedRect(187, 147, enemyTimer-(159 * (timerEvents[0].getProgress())), 28, 3);
+		enemyTimerBar.fillRoundedRect(187, 147, -enemyTimer+(159 * (timerEvents[0].getProgress())), 28, -0.3);
+		if((enemyTimer-(159 * (timerEvents[0].getProgress())))<=0 && sixthEnemy.health>0){
+			enemiesDefeated=0;
+		}
+		
+	}
+
+
+	if(enemy.health<=0){
+		enemyHealthBar.clear();
+		kill(enemy);
+		enemy.health=318;
+	}
+
+
+	if(sixthEnemy.health<=0){
+		enemyHealthBar.clear();
+		kill(sixthEnemy);
+		sixthEnemy.health=318;
+		enemyTimerBar.clear();
+		enemyTimer=159;
+		count=0;
+	}
+
+
+    if (player.currentExp-1 >= requiredExp){//sets xp limit based only in bar width before clearing
+    	expBar.clear();
+    	player.currentExp=0;
+    	player.level++;
     }
 
 
-    text.setText(output);
+    text.setFont('Neuropolitical');//player level output method
+    text.setFontSize(64);
+    if(player.level<10){
+    	text.setPosition(42, 30);
+    }else text.setPosition(27,30);
+    text.setText(levelOutput);
+
+    defeatedText.setFontSize(28);
+    defeatedText.setTint(0xffffff);
+    defeatedText.setPosition(28,385);
+    defeatedText.setText(defeated);
+
 }
 
 //end of main code
 //minor function declarations
 
-function attack(damage) {
-  	xp += damage;
+function displayDamage(){
+	
+	damageText.setFontSize(32);
+	damageText.setPosition((Math.random()*280)+25, (Math.random()*194)+158);
+    damageText.setText(player.damage);
 }
+
+function attack(enemy) {
+	enemy.health = enemy.health-(player.damage/enemy.damageReduction);
+}
+
+function kill(enemy){
+	player.currentExp += (enemy.expValue/player.level);
+	count++;
+	enemiesDefeated++;
+}
+
 
 
 </script>
