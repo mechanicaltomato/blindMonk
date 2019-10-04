@@ -38,7 +38,7 @@ let player = {
 }
 
 let enemy = {
-	health : 318,
+	health : 318,//enemies health set to 318 because the healthBar is based on the number of pixels it uses
 	expValue : 70,
 	damageReduction : 1,
 }
@@ -47,20 +47,20 @@ let sixthEnemy = {
 	expValue : 150,
 	damageReduction : 2,
 }
-
+//it doesn`t matter if it`s var or let, they are interchangeable
 var game = new Phaser.Game(config);
 let expBar;
 var text;//used to hold level text
 var damageText;//used to hold damage text
-let requiredExp = 150;
-let healthOutline;
-let count =0;
+let requiredExp = 150;//always 150 because it is based on the maximum number of pixels the expBar can use
+let healthOutline;//it`s only for the monster health bar outline
+let count =0;//used to implement the sixth foe power up
 let enemiesDefeated=0;//holds the number of enemies defeated
 let enemyHealthBar;
 var defeatedText;
 var timerEvents = [];
 var enemyTimerBar;
-var enemyTimer =159;
+var enemyTimer =159;//entire bar would take 318, i chose to implement a "double bar", hence why the value is halved
 
 
 
@@ -82,7 +82,7 @@ function create (){
   	var background = this.add.sprite(0, 0, 'background').setOrigin(0) ;
   	var button = this.add.sprite(185, 552, 'button').setOrigin(0.5).setInteractive();
 
-  	timerEvents.push(this.time.addEvent({ delay: 7000, loop: false }));
+  	timerEvents.push(this.time.addEvent({ delay: 7000, loop: false }));//it`s the bar that controls the sixth foe timer
 
   	defeatedText = this.add.text();//variable used to hold the function that displays text
   	damageText = this.add.text();
@@ -101,7 +101,7 @@ function create (){
 	button.on('pointerdown', function (pointer) {
   		this.setTint(0xff0000);
   		if(count<5){
-  			attack(enemy);
+  			attack(enemy);//attack now has a target enemy
   		}else attack(sixthEnemy);
   		displayDamage();
   		
@@ -125,7 +125,7 @@ function create (){
 function update () {
 
 	
-    var levelOutput = [];
+    var levelOutput = [];//used to hold text instances
     var defeated = [];
 
 
@@ -133,7 +133,7 @@ function update () {
     defeated.push("Enemies defeated:" + enemiesDefeated)
     
     expBar.clear();
-    expBar.fillStyle(0xffff00, 1);
+    expBar.fillStyle(0xffff00, 1);//defines color
     expBar.fillRoundedRect(139, 49, 1*player.currentExp, 28, 3);//defines x offset, y offset, current length, bar thickness and corner roundness
 
 	healthOutline.clear();
@@ -143,17 +143,17 @@ function update () {
     enemyHealthBar.clear();
     enemyHealthBar.fillStyle(0xff0000, 1);
 
-    if(count<5){
-		enemyHealthBar.fillRoundedRect(28, 132, enemy.health, 28, 3);
-  		timerEvents[0].reset({ delay: 7000, loop: false });
+    if(count<5){//decision on which enemy to use based on count
+		enemyHealthBar.fillRoundedRect(28, 132, enemy.health, 28, 3);//bar size equals enemy health(318 if unaltered)
+  		timerEvents[0].reset({ delay: 7000, loop: false });//timer starts when game starts, this way player always has 7 seconds to defeat the sixth foe
   	}else {	
 
-		enemyHealthBar.fillRoundedRect(28, 132, sixthEnemy.health, 28, 3);//decision on which enemy to use based on count
+		enemyHealthBar.fillRoundedRect(28, 132, sixthEnemy.health, 28, 3);
 		enemyTimerBar.clear();
 		enemyTimerBar.fillStyle(0xff00ff)
-		enemyTimerBar.fillRoundedRect(187, 147, enemyTimer-(159 * (timerEvents[0].getProgress())), 28, 3);
-		enemyTimerBar.fillRoundedRect(187, 147, -enemyTimer+(159 * (timerEvents[0].getProgress())), 28, -0.3);
-		if((enemyTimer-(159 * (timerEvents[0].getProgress())))<=0 && sixthEnemy.health>0){
+		enemyTimerBar.fillRoundedRect(187, 147, enemyTimer-(159 * (timerEvents[0].getProgress())), 28, 3);//function to estabilish how timer bar behaves
+		enemyTimerBar.fillRoundedRect(187, 147, -enemyTimer+(159 * (timerEvents[0].getProgress())), 28, -0.3);//essentially there are two mirrored timer bars
+		if((enemyTimer-(159 * (timerEvents[0].getProgress())))<=0 && sixthEnemy.health>0){//if time`s up before foe is down, resets kill streak
 			enemiesDefeated=0;
 		}
 		
@@ -177,21 +177,21 @@ function update () {
 	}
 
 
-    if (player.currentExp-1 >= requiredExp){//sets xp limit based only in bar width before clearing
+    if (player.currentExp-1 >= requiredExp){//sets xp limit based only in bar width before clearing(-1 so you can see the full bar when currentExp=150)
     	expBar.clear();
     	player.currentExp=0;
     	player.level++;
     }
 
-
-    text.setFont('Neuropolitical');//player level output method
-    text.setFontSize(64);
-    if(player.level<10){
+	//used to print out level in the top left
+    text.setFont('Neuropolitical');//defines font
+    text.setFontSize(64);//defines size
+    if(player.level<10){//adjusts position for double digits
     	text.setPosition(42, 30);
     }else text.setPosition(27,30);
-    text.setText(levelOutput);
+    text.setText(levelOutput);//prints out level
 
-    defeatedText.setFontSize(28);
+    defeatedText.setFontSize(28);//defeated enemies count display
     defeatedText.setTint(0xffffff);
     defeatedText.setPosition(28,385);
     defeatedText.setText(defeated);
