@@ -1,23 +1,26 @@
 # Blind Monk
 O jogo onde você não enxerga nada, somente bate o que vier a frente.
 Lembrar que é necessario rodar o arquivo em um servidor local.
+-Obs: tendo em vista que teremos algum tipo de visual, o mone já não é cego.
+-Obs2: sabendo que monges são, de modo geral, seres pacíficos, devíamos mudar o nome do jogo
+-Obs3: Jogo deveria se chamar "Berserker Fury", é auto-explicativo
 
 
-Parte 1(feito):
+O que o jogo é:
 
--Criar um botão.
+-Um botão de ataque, o qual mostra o dano causado em um local aleatorio na tela
 
--Contador de exp e level.
+-Barra de vida dos inimigos.
 
--Conforme aperta o botão, ganha exp.
+-Mecânica de upar de level conforme mata criaturas.
+
+-Sexto inimigo é sempre mais forte, e tem um timer para ser morto
 
 
-Parte 2:
+O que ele ainda deve se tornar:
 
 -Adicionar pontos de abilidade ao subir de nível
 
--Adicionar sprites para level, barra de xp e hp, e para as skills que podem ser adquiridas(um attack+ é o suficiente para testar)
-
--Mostrar damage causado a cada clique
-
 -Adicionar "auto-ataque"
+
+-Adicionar sprites, efeitos e sons.
