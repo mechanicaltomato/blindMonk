@@ -179,7 +179,7 @@ function update () {
 
     if (player.currentExp-1 >= requiredExp){//sets xp limit based only in bar width before clearing(-1 so you can see the full bar when currentExp=150)
     	expBar.clear();
-    	player.currentExp=0;
+    	player.currentExp=player.currentExp - 150;//so there`s no loss of exp upon leveling
     	player.level++;
     }
 
@@ -204,16 +204,16 @@ function update () {
 function displayDamage(){
 	
 	damageText.setFontSize(32);
-	damageText.setPosition((Math.random()*280)+25, (Math.random()*194)+158);
+	damageText.setPosition((Math.random()*280)+25, (Math.random()*194)+158);//function to randomly determine output position within the "screen"
     damageText.setText(player.damage);
 }
 
 function attack(enemy) {
-	enemy.health = enemy.health-(player.damage/enemy.damageReduction);
+	enemy.health = enemy.health-(player.damage/enemy.damageReduction);//since health is a fixed value, damage reduction is how we will represent tougher enemies
 }
 
 function kill(enemy){
-	player.currentExp += (enemy.expValue/player.level);
+	player.currentExp += (enemy.expValue/player.level);//stronger the player, less exp received
 	count++;
 	enemiesDefeated++;
 }
