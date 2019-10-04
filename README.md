@@ -1,7 +1,7 @@
 # Blind Monk
 O jogo onde você não enxerga nada, somente bate o que vier a frente.
 Lembrar que é necessario rodar o arquivo em um servidor local.
--Obs: tendo em vista que teremos algum tipo de visual, o mone já não é cego.
+-Obs: tendo em vista que teremos algum tipo de visual, o monge já não é cego.
 -Obs2: sabendo que monges são, de modo geral, seres pacíficos, devíamos mudar o nome do jogo
 -Obs3: Jogo deveria se chamar "Berserker Fury", é auto-explicativo
 
