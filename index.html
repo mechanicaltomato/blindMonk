@@ -35,6 +35,7 @@ let player = {
 	currentExp : 0,
 	level : 1,
 	damage : 100,
+	skillPoints : 0,
 }
 
 let enemy = {
@@ -59,8 +60,12 @@ let enemiesDefeated=0;//holds the number of enemies defeated
 let enemyHealthBar;
 var defeatedText;
 var timerEvents = [];
+var autoAttackCount=0;
+var autoAttackStrength = player.damage/2
 var enemyTimerBar;
 var enemyTimer =159;//entire bar would take 318, i chose to implement a "double bar", hence why the value is halved
+var displayPoints;
+
 
 
 
@@ -74,6 +79,7 @@ function preload ()
 {
     this.load.image('background', 'assets/background.png');
     this.load.spritesheet('button', 'assets/button_spritesheet.png', { frameWidth: 232, frameHeight: 228 });
+    this.load.image('skill', 'assets/skill.png');
 }
 function create (){
 
@@ -81,23 +87,33 @@ function create (){
 	var levelOutput = [];//used to print level on top left of the screen on update function
   	var background = this.add.sprite(0, 0, 'background').setOrigin(0) ;
   	var button = this.add.sprite(185, 552, 'button').setOrigin(0.5).setInteractive();
+  	var skill = this.add.sprite(314 , 450, 'skill').setOrigin(0.5).setInteractive();
 
+  	skill.setScale(.5);
+
+  	
   	timerEvents.push(this.time.addEvent({ delay: 7000, loop: false }));//it`s the bar that controls the sixth foe timer
 
   	defeatedText = this.add.text();//variable used to hold the function that displays text
-  	damageText = this.add.text();
+  	damageText = this.add.text();//.setAlpha(0); attempt at adding fade out effect on text, still in progress
+  	displayPoints = this.add.text();
   	text = this.add.text();//allows adding text
+
   	expBar = this.add.graphics();//allows usage of graphics
   	enemyTimerBar = this.add.graphics();
-
   	healthOutline = this.add.graphics();
-
   	enemyHealthBar = this.add.graphics();
-  	
-  	
+  	/*
+  	this.tweens.add({
+        targets: damageText,
+        alpha: { value: 1, duration: 200, ease: 'Bounce.easeOut' },
+        yoyo: true,
+        loop: -1
+    });//part of the effort of fading out text
+    */
 
 
-
+  	//attack button behaviour
 	button.on('pointerdown', function (pointer) {
   		this.setTint(0xff0000);
   		if(count<5){
@@ -120,17 +136,32 @@ function create (){
     	this.clearTint();
 
 	});
+	//
+	//skill button behaviour
+	skill.on('pointerdown', function (pointer){
+		this.setTint(0xff0000);
+		if(player.skillPoints>=1){
+			player.damage=Math.floor(player.damage*1.1);
+			player.skillPoints--;
+		}
+	});
+	skill.on('pointerout', function (pointer){
+		this.clearTint();
+	});
+	skill.on('pointerup', function (pointer){
+		this.clearTint();
+	});
+
 }
 
 function update () {
 
-	
     var levelOutput = [];//used to hold text instances
     var defeated = [];
 
 
     levelOutput.push(player.level);//prints out text
-    defeated.push("Enemies defeated:" + enemiesDefeated)
+    defeated.push("Enemies defeated:" + enemiesDefeated);
     
     expBar.clear();
     expBar.fillStyle(0xffff00, 1);//defines color
@@ -159,6 +190,18 @@ function update () {
 		
 	}
 
+	if(player.level>=5){//auto attack definition, starts at level 5
+		autoAttackCount++;
+		if(autoAttackCount>=30){
+			if(count<5){
+				enemy.health = enemy.health - autoAttackStrength;
+				autoAttackCount = 0;
+			}else {
+				sixthEnemy.health = sixthEnemy.health - autoAttackStrength;
+				autoAttackCount = 0;
+			}
+		}
+	}
 
 	if(enemy.health<=0){
 		enemyHealthBar.clear();
@@ -180,7 +223,7 @@ function update () {
     if (player.currentExp-1 >= requiredExp){//sets xp limit based only in bar width before clearing(-1 so you can see the full bar when currentExp=150)
     	expBar.clear();
     	player.currentExp=player.currentExp - 150;//so there`s no loss of exp upon leveling
-    	player.level++;
+    	levelUp();
     }
 
 	//used to print out level in the top left
@@ -196,6 +239,10 @@ function update () {
     defeatedText.setPosition(28,385);
     defeatedText.setText(defeated);
 
+    displayPoints.setTint(0xffffff);
+    displayPoints.setFontSize(20);
+    displayPoints.setPosition(332, 70);
+    displayPoints.setText(player.skillPoints)
 }
 
 //end of main code
@@ -205,7 +252,10 @@ function displayDamage(){
 	
 	damageText.setFontSize(32);
 	damageText.setPosition((Math.random()*280)+25, (Math.random()*194)+158);//function to randomly determine output position within the "screen"
-    damageText.setText(player.damage);
+	if(count<5){
+    	damageText.setText(Math.floor(player.damage/enemy.damageReduction));
+    }else damageText.setText(Math.floor(player.damage/sixthEnemy.damageReduction));
+
 }
 
 function attack(enemy) {
@@ -216,6 +266,13 @@ function kill(enemy){
 	player.currentExp += (enemy.expValue/player.level);//stronger the player, less exp received
 	count++;
 	enemiesDefeated++;
+}
+
+function levelUp(){
+	player.level++;
+	player.skillPoints++;
+	enemy.damageReduction=enemy.damageReduction*1.2;
+	sixthEnemy.damageReduction=sixthEnemy.damageReduction*1.3;
 }
 
 
