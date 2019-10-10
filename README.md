@@ -16,11 +16,12 @@ O que o jogo é:
 
 -Sexto inimigo é sempre mais forte, e tem um timer para ser morto
 
+-Pontos de abilidade ganhos ao subir de nivel, aumentam em 10% dano de ataque quando usados
+
+-Auto ataque implementado, a partir do lvl 5 a cada segundo(ish) causa metade do dano de ataque do jogador
 
 O que ele ainda deve se tornar:
 
--Adicionar pontos de abilidade ao subir de nível
-
--Adicionar "auto-ataque"
-
 -Adicionar sprites, efeitos e sons.
+
+-Adicionar complexidade as skills, criaturas, equipamento e outros.
