@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "blindmonk-math",
+  "private_key_id": "463eded3cb7f945f613ada92ee7b594e3931d36b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQh6NUvzHfNqWv\nP9NqV9hLuWECR79Z1u4migeKrZgGCfeMNQTLFcE2GWOKinEHAdnysGnHsW+ZosT0\njxuKhJ9yaNy6L83B8Tz4YMdBXc+UB+IXqcrCKSdRtFMwmxpyqpFZdfO7dhyqsud9\nccXXeWeTKLCihffhWco+olbKjoO8GfHrwVNnEiQZAgNjepOAJO7HBxwvctzf08In\n/n261FbBDshks1erDlG5xblrkYK5PX0GmBvDh8ysXYAIPF8+5pVWxBlF4ai1IHyz\n7CG8xUsBGvE8YmrwS+GWoUZYNPWpkgGgs6gCsWmZvXxtGgnqxLrmwicD9NX7oqKG\nJkyW+ulLAgMBAAECggEACMn7TY7kjrhktApu/aVenswmWex3gow1B0U76SPpfcOr\nEGr4gYjCsnhieQMC5q997u5M+nvniC2u301S0HwjgJAuLN+eNbMxvE+qxkcqboLg\njCM0i1LcAVGmAxrMKKTvnzomiQ2nbzqss4ILu26SAuuaw2kh82Y0NjW/RN1MI628\nfj0SFA5PYJUZueOzDlrGLEYI1ymt2OOVj0Vu679k4VIeXY+kekm2i8Z/Sq9hx3Ag\nfkPkHV/sgASEsue0P2cSY/BGWLzyde4ZkEyUeMnjIgezLSbjC+t7kI8mqrickqt3\nGCgrL6fIPM+CR7sUehLCq04IU2UA+5fWpgsrd05xUQKBgQDujxpLfWGzSBiLOVV4\nQDJxMFr1xHxyjCnkrpDfT6/q/OTs/T3UWj0d16gFxyprMKanzFXffMIqD00hcFtd\n0SkSg03GCq2XAaZOVKrEDhTCWEymgQDWEgNgJOkjOketrDCfGvu5ZW5hMIVd9Dc3\nWPJXhmNVjHvk8p3qR0EuUjymmwKBgQDfxoGShdgiKvVle+vjf4p7ZkmzbJ2grvqU\njkZq5FZqjFMJJQHb3t0UvMudYdzdNxs5mkPr4rpQPzfFb0SWql6HAJM4o0L42sSG\nE24tgFfY11wLq7t9Deydlp5l0W8eEpm1mRV8itx/8gfbmg07BKfrKlbr+R0I8bFs\ny7s573ybEQKBgH4Kebgc3Lvegak9d5z7PitzgvuK/r1+tLuwR7bU4XtkdoeIHVzO\n+K+Fu66h1hWgNM0/NrfHsMaMIxJhzMQ6uFqhqTvTdHfuVTHZpgfD8M/l20m1qv1v\nsvzfQ5ZrOmfWLDJEDW+c2b7b5fsIBwxlIFWCGYWfne4PCcQ4NYYFySm1AoGAEKDp\no/+6Ld/PWHk68C7cFYtmUqTxma0nBb8E0JCjM0u2J+nOF46aEx5saweIqA+eQEuM\nXIz+l1P7SvqXuDJ0z8dlKUJIicGH9Qagm1T8MiretidOyV4thRBaOOq1PSDYtzvm\n8thGxmMv3ku2S/pul/UPfH2IgM+lBZamFQoM0mECgYEAt95nq4AutKIt35/SoxNg\n//L3BVB10nZ7Dxtt1BletvyabpJFBqEySQwIroQMz2cSzLAH9CICqT4VmhZHH/I8\nPOgkiT8aAbXUg7j4IhNchpdKmnsPr/g8s3R5EeCckZAIrC2Df/gZQEMgBJ+mV1GT\nKvvNecbLWQdDS7bl95grGQI=\n-----END PRIVATE KEY-----\n",
+  "client_email": "blinddata@blindmonk-math.iam.gserviceaccount.com",
+  "client_id": "109358830773680184218",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/blinddata%40blindmonk-math.iam.gserviceaccount.com"
+}
