@@ -1,0 +1,4 @@
+Order,Name,HP,Room,ExpRate,Boss
+1,Tiny Slime,10,1,1,FALSE
+2,Tiny Slime,10,1,1,FALSO
+3,Chunky bitch,11,2,3,TRUE
