@@ -20,47 +20,44 @@
 
 <script type="text/javascript">
 
-
-
-
-var config = {
-    type: Phaser.WEBGL,
-    parent: 'phaser-example',
-    width : 375,
-    height : 667,
-    backgroundColor : 'fff',
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    }
-};
-//variable definitions
-let player = {
-	currentExp : 0,
-	level : 1,
-	damage : 1,
-	skillPoints : 0,
-}
-
-let enemy = {
-	order : 1,
-	name: 'Tiny Slime',
-	hp : 10,
-	room : 1,
-	exprate : 1,
-	boss : false,
-}
-//csv loader
-var enemyList = [];
-var lines = [];
 $(document).ready(function(){
-	$.ajax({type: "GET",
+	let p = $.ajax({type: "GET",
 	url: "cells.txt",
 	dataType: "text",
-	success: function(data) {processData(data);}
+	// success: function(data) {processData(data);}
 	});
-});
+
+  var config = {
+      type: Phaser.WEBGL,
+      parent: 'phaser-example',
+      width : 375,
+      height : 667,
+      backgroundColor : 'fff',
+      scene: {
+          preload: preload,
+          create: create,
+          update: update
+      }
+  };
+  //variable definitions
+  let player = {
+    currentExp : 0,
+    level : 1,
+    damage : 1,
+    skillPoints : 0,
+  }
+
+  let enemy = {
+    order : 1,
+    name: 'Tiny Slime',
+    hp : 10,
+    room : 1,
+    exprate : 1,
+    boss : false,
+  }
+  //csv loader
+  var enemyList = [];
+  var lines = [];
 
 function processData(allText) {
 	var allTextLines = allText.split(/\r\n|\n/);
@@ -312,6 +309,7 @@ function autoAttack(){
 }
 */
 
+});
 
 </script>
 
