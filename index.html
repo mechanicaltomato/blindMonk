@@ -30,8 +30,13 @@ var config = {
         preload: preload,
         create: create,
         update: update
+    },
+    audio: {
+    	disableWebAudio: true
     }
 };
+var game = new Phaser.Game(config);
+
 //variable definitions
 let player = {
 	currentExp : 0,
@@ -39,10 +44,7 @@ let player = {
 	damage : 3,
 	skillPoints : 0,
 }
-
-
 //it doesn`t matter if it`s var or let, they are interchangeable
-var game = new Phaser.Game(config);
 let requiredExp = 150;//always 150 because it is based on the maximum number of pixels the expBar can use
 var timerEvents = [];//used to control the boss timer
 var bossTimer =159;//entire bar would take 318, i chose to implement a "double bar", hence why the value is halved
@@ -50,6 +52,7 @@ var bossTimer =159;//entire bar would take 318, i chose to implement a "double b
 var death;
 var punch;
 var autoPunch;
+var gainLevel;
 //all texts
 var displayPoints;//used to show player's unspent skill points
 var defeatedText;//used to display the "Enemies defeated" text
@@ -72,8 +75,9 @@ let currentLevel = levelList[j];
 let i =0;
 let currentEnemy = enemyList[i];
 var enemyHealthIncrement = 318/currentEnemy.hp;
-var enemyExpIncrement = (requiredExp/currentLevel.exp)*currentEnemy.expValue;//defines what "1 exp" is in term of pixels and assigns monster exp accordingly
-
+var enemyExpIncrement = (requiredExp/currentLevel.exp)*currentEnemy.expValue;//"1 exp" in term of pixels, handles full exp accordingly
+let camera;
+var skill;
 
 
 //end of variable definitions
@@ -84,48 +88,55 @@ var enemyExpIncrement = (requiredExp/currentLevel.exp)*currentEnemy.expValue;//d
 
 function preload ()
 {
-	this.load.audio('punch', 'assets/punch.mp3');
-	this.load.audio('death', 'assets/death.mp3');
-	this.load.audio('autoPunch', 'assets/autoPunch.mp3')
-
     this.load.image('background', 'assets/background.png');
     this.load.spritesheet('button', 'assets/button_spritesheet.png', { frameWidth: 232, frameHeight: 228 });
     this.load.image('skill', 'assets/skill.png');
+
+    this.load.audio('gainLevel', ['assets/levelUp.ogg', 'assets/levelUp.mp3']);
+	this.load.audio('death', ['assets/death.ogg','assets/death.mp3']);
+	this.load.audio('autoPunch', ['assets/autoPunch.ogg','assets/autoPunch.mp3'])
+	this.load.audio('punch', ['assets/punch.ogg','assets/punch.mp3'], {
+		instances: 4
+	});
 }
 function create (){
+	//enable camera effects
+	this.cameras.main.setViewport(5,5,375,667);
+	camera = this.cameras.main;
 
+	//enable sounds
+	gainLevel = this.sound.add('gainLevel');
 	punch = this.sound.add('punch');
 	death = this.sound.add('death');
 	autoPunch = this.sound.add('autoPunch');
 
+	//enable sprites
   	var background = this.add.sprite(0, 0, 'background').setOrigin(0) ;
   	var button = this.add.sprite(185, 552, 'button').setOrigin(0.5).setInteractive();
-  	var skill = this.add.sprite(314 , 450, 'skill').setOrigin(0.5).setInteractive();//places buttons to interact
+  	skill = this.add.sprite(314 , 450, 'skill').setOrigin(0.5).setInteractive();//places buttons to interact
+  	skill.setScale(0);//sets skill button scale, in this case, halves all dimensions
 
-  	skill.setScale(.5);//sets skill button scale, in this case, halves all dimensions
-
-  	
+  	//enable timed events
   	timerEvents.push(this.time.addEvent({ delay: 7000, loop: false }));//it`s the bar that controls the sixth foe timer
 
+  	//enable texts
   	defeatedText = this.add.text();//variable used to hold the function that displays text
   	damageText = this.add.text();//.setAlpha(0); first piece out of two of commented code, part of the text fade out effort
   	autoAttackText = this.add.text();
   	displayPoints = this.add.text();
   	text = this.add.text();//allows adding text
   	enemyName = this.add.text();
+  	displayTexts();
 
+  	//enable bars
   	expBar = this.add.graphics();//allows usage of graphics in this variable
   	bossTimerBar = this.add.graphics();
   	healthOutline = this.add.graphics();
   	enemyHealthBar = this.add.graphics();
 
-
-
-
-
   	expBar.clear();//making sure the bars are working how they should
     expBar.fillStyle(0xffff00, 1);//defines color
-    expBar.fillRoundedRect(139, 49, 1*player.currentExp, 28, 3);//defines x offset, y offset, current length, bar thickness and corner roundness
+    expBar.fillRoundedRect(139, 49, 1*player.currentExp, 28, 3);// x offset, y offset, length, thickness and corner roundness
 
 	healthOutline.clear();//it's only the background for the enemies' health, doesn't change
     healthOutline.fillStyle(0xffffff, 1);
@@ -135,7 +146,9 @@ function create (){
     enemyHealthBar.fillStyle(0xff0000, 1);
     enemyHealthBar.fillRoundedRect(28, 132, currentEnemy.hp*enemyHealthIncrement, 28, 3);//bar size equals enemy health(318 if unaltered)
 
-  	displayTexts();
+
+
+  	
   	
 
 
@@ -143,15 +156,9 @@ function create (){
 	button.on('pointerdown', function (pointer) {
   		this.setTint(0xff0000);
   		attack(currentEnemy);//attack now has a target enemy
-  		displayDamage();  		
-  		
+  		displayDamage();
+  		camera.shake(50);
 	});
-	this.input.on('pointerdown', function(){//screenshake function
-		this.cameras.main.shake(50);
-		
-	}, this);
-
-
 
   	button.on('pointerout', function (pointer) {
 
@@ -171,6 +178,7 @@ function create (){
 		if(player.skillPoints>=1){
 			player.damage+=1
 			player.skillPoints--;
+			autoPunch.play();
 			displayTexts();
 		}
 	});
@@ -185,10 +193,11 @@ function create (){
 
 function update () {
 
-	autoAttack();
-
+	if(player.skillPoints>=1){
+		skill.setScale(0.5);
+	}else skill.setScale(0);
     if(currentEnemy.boss!='TRUE'){//decision on which enemy to use based on count
-  		timerEvents[0].reset({ delay: 7000, loop: false });//timer starts when game starts, this way player always has 7 seconds to defeat the sixth foe
+  		timerEvents[0].reset({ delay: 3000, loop: false });//timer starts when game starts, this way player always has 7 seconds to defeat the sixth foe
   	}else {	
 		bossTimerBar.clear();
 		bossTimerBar.fillStyle(0xff00ff)
@@ -244,22 +253,41 @@ function displayTexts(){
 function displayDamage(){
 	
 	damageText.setFontSize(32);
-	damageText.setPosition((Math.random()*280)+25, (Math.random()*194)+158);//function to randomly determine output position within the "screen"
+	damageText.setPosition((Math.random()*280)+25, (Math.random()*176)+190);//function to randomly determine output position within the "screen"
     damageText.setText(Math.floor(player.damage));
 
 }
 
 function attack(currentEnemy) {
+	var autoAttackDamage = player.damage/2
+	//main attack
 	currentEnemy.hp = currentEnemy.hp-Math.floor(player.damage);
 	enemyHealthBar.clear();
     enemyHealthBar.fillStyle(0xff0000, 1);
 	enemyHealthBar.fillRoundedRect(28, 132, currentEnemy.hp*enemyHealthIncrement, 28, 3);
 	punch.play();
+
+	//double attack
+	autoAttackText.setTint(0xff00ff);
+	autoAttackText.setFontSize(32);
+	if(player.level>=5){//starts at level 5
+		currentEnemy.hp -= Math.floor(autoAttackDamage);
+		enemyHealthBar.clear();
+	   	enemyHealthBar.fillStyle(0xff0000, 1);
+		enemyHealthBar.fillRoundedRect(28, 132, currentEnemy.hp*enemyHealthIncrement, 28, 3);
+		autoAttackText.setPosition((Math.random()*280)+25, (Math.random()*176)+190);//randomly determines text position on "screen"
+		autoAttackText.setText(Math.floor(autoAttackDamage));
+		autoAttackCount = 0;
+		autoPunch.play();
+	}
+	
+
 }
 
 function kill(currentEnemy){
 	player.currentExp += enemyExpIncrement;
-	if (player.currentExp-1 >= requiredExp){//sets xp limit based only in bar width before clearing(-1 so you can see the full bar when currentExp=150)
+	
+	if (player.currentExp-1 >= requiredExp){
     	expBar.clear();
 
     	player.currentExp=player.currentExp - 150;//so there`s no loss of exp upon leveling
@@ -275,47 +303,24 @@ function kill(currentEnemy){
 	enemyHealthBar.clear();
     enemyHealthBar.fillStyle(0xff0000, 1);
     enemyHealthBar.fillRoundedRect(28, 132, currentEnemy.hp*enemyHealthIncrement, 28, 3);//bar size equals enemy health(318 if unaltered)
-
+    
     expBar.clear();//making sure the bars are working how they should
     expBar.fillStyle(0xffff00, 1);//defines color
     expBar.fillRoundedRect(139, 49, 1*player.currentExp, 28, 3);//defines x offset, y offset, current length, bar thickness and corner roundness
-
+	
 	displayTexts();
 	death.play();
-	console.log(player.currentExp);
 }
 
 function levelUp(){
 	player.level++;
 	currentLevel = levelList[++j];
 	player.skillPoints++;
+	camera.flash(50);
+	gainLevel.play();
 }
 
-function autoAttack(){
 
-	var autoAttackDamage = player.damage/2
-	autoAttackText.setTint(0xff00ff);
-	autoAttackText.setFontSize(32);
-	
-
-	if(player.level>=5){//auto attack definition, starts at level 5
-		autoAttackCount++;//unfortunately, for now it is based only on the refresh rate of the update function
-		if(autoAttackCount>=60){//aproximately 1 second
-			currentEnemy.hp -= Math.floor(autoAttackDamage);
-			enemyHealthBar.clear();
- 		   	enemyHealthBar.fillStyle(0xff0000, 1);
-			enemyHealthBar.fillRoundedRect(28, 132, currentEnemy.hp*enemyHealthIncrement, 28, 3);
-
-			autoAttackText.setPosition((Math.random()*280)+25, (Math.random()*194)+158);//function to randomly determine output position within the "screen"
-			autoAttackText.setText(Math.floor(autoAttackDamage));
-			autoAttackCount = 0;
-			autoPunch.play();
-		}
-	}
-
-	
-
-}
 
 </script>
 
